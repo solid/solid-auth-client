@@ -27,6 +27,14 @@ export default class SolidAuthClient extends EventEmitter {
 
   fetch(input: RequestInfo, options?: RequestOptions): Promise<Response> {
     this.emit('request', toUrlString(input))
+    if (toUrlString(input).match(/^app/)) {
+      if (
+        typeof window.solid !== 'undefined' &&
+        typeof window.solid.rest !== 'undefined'
+      ) {
+        return window.solid.rest.fetch(input, options)
+      }
+    }
     return authnFetch(defaultStorage(), globalFetch, input, options)
   }
 
